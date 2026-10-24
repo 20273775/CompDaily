@@ -44,13 +44,15 @@ A browser-based interactive compound-interest calculator built with Streamlit an
 - Explanation of assumptions and limitations
 
 All projections are estimates, not guaranteed investment outcomes.
+
+# Version Française 
+
 # CompDaily
 
 # CompDaily — Planificateur de croissance de l’épargne
 
 Une calculatrice interactive des intérêts composés accessible dans un navigateur, développée avec Streamlit et Plotly.
 
-# Version Française 
 
 ## Exécuter l’application localement
 

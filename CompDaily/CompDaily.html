@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CompDaily | Savings planner</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b1220'/%3E%3Cpath d='M7 22 L13 15 L18 19 L25 9' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--surface:#f6f7f9;--line:#e8eaee;--ink:#0b1220;--muted:#6b7280;--a:#0b1220;--b:#4f46e5;--grid:#eef0f3;--note-bg:#f3f4ff;--note-ink:#3730a3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3{letter-spacing:-.03em;margin:0;font-weight:650}
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.25rem 3rem}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 0;border-bottom:1px solid var(--line)}
+.logo{font-weight:700;font-size:1.15rem;letter-spacing:-.04em}
+.nav span{color:var(--muted);font-size:.88rem}
+.hero{padding:3.2rem 0 2.4rem}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);line-height:1.05;letter-spacing:-.045em;font-weight:700;max-width:14ch}
+.hero p{color:var(--muted);margin:1rem 0 0;max-width:560px;font-size:1.05rem}
+.layout{display:grid;grid-template-columns:310px 1fr;gap:2.5rem;align-items:start}
+@media(max-width:860px){.layout{grid-template-columns:1fr;gap:1.8rem}}
+.panel{background:var(--surface);border-radius:16px;padding:1.4rem}
+.panel h2{font-size:1.05rem}.panel .sub{color:var(--muted);font-size:.86rem;margin:.15rem 0 .6rem}
+label{display:block;font-weight:500;font-size:.86rem;margin:1rem 0 .3rem}
+input[type=number],select{width:100%;padding:.62rem .75rem;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit;font-size:.95rem;transition:border-color .15s,box-shadow .15s}
+input[type=number]:hover,select:hover{border-color:#cfd3da}
+input[type=number]:focus,select:focus{border-color:var(--ink);outline:0;box-shadow:0 0 0 3px rgba(11,18,32,.08)}
+input[type=range]{width:100%;accent-color:var(--ink)}
+input[type=checkbox],input[type=radio]{accent-color:var(--ink)}
+.rv{float:right;color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+fieldset{border:0;padding:0;margin:1rem 0 0}legend{font-weight:500;font-size:.86rem;padding:0 0 .3rem}
+.radio{display:flex;gap:.55rem;align-items:center;font-size:.9rem;margin:.2rem 0;font-weight:400}
+hr{border:0;border-top:1px solid var(--line);margin:1.3rem 0 1rem}
+.tog{display:flex;gap:.6rem;align-items:center;font-weight:600;margin:0}
+#bBox{display:none}#bBox.on{display:block}
+main h2{font-size:.95rem;color:var(--muted);font-weight:500;letter-spacing:0}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);margin:.9rem 0 2rem;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media(max-width:600px){.metrics{grid-template-columns:1fr}.metric{border-left:0!important;padding-left:0!important;border-top:1px solid var(--line)}.metric:first-child{border-top:0}}
+.metric{padding:1.2rem 1.2rem 1.2rem 1.4rem;border-left:1px solid var(--line)}
+.metric:first-child{border-left:0;padding-left:0}
+.metric span{display:block;color:var(--muted);font-size:.84rem}
+.metric strong{font-size:clamp(1.4rem,2.6vw,1.9rem);letter-spacing:-.04em;font-weight:650;font-variant-numeric:tabular-nums}
+.tabs{display:inline-flex;gap:.2rem;background:var(--surface);padding:.25rem;border-radius:11px;margin-bottom:1.3rem;max-width:100%;overflow-x:auto}
+.tabs button{background:none;border:0;border-radius:8px;color:var(--muted);font:500 .9rem 'Inter',sans-serif;padding:.45rem .95rem;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(11,18,32,.12)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+.pane{display:none}.pane.on{display:block}
+.chart{position:relative}
+svg{width:100%;height:auto;display:block}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;border-radius:10px;padding:.55rem .75rem;font-size:.82rem;box-shadow:0 8px 24px rgba(11,18,32,.18);display:none;white-space:nowrap}
+.legend{display:flex;gap:1.3rem;font-size:.86rem;margin-bottom:.6rem;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.45rem}
+.muted{color:var(--muted);font-size:.86rem}
+.note{background:var(--note-bg);color:var(--note-ink);padding:.85rem 1.1rem;border-radius:12px;margin-top:1rem;font-size:.93rem}
+.warn{background:#fff8eb;color:#8a5a00;padding:.75rem 1rem;border-radius:12px;margin:.8rem 0 0;font-size:.9rem}
+.err{background:#fef2f2;color:#991b1b;padding:.75rem 1rem;border-radius:12px;margin-top:.8rem}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.93rem}
+th,td{text-align:right;padding:.7rem .6rem;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:500;font-size:.82rem}
+tbody tr:hover{background:var(--surface)}
+.scroll{overflow-x:auto}
+.btn{margin-top:1.1rem;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:.65rem 1.1rem;font:500 .9rem 'Inter',sans-serif;cursor:pointer;transition:background .15s}
+.btn:hover{background:#27324a}
+code{background:var(--surface);padding:.15rem .4rem;border-radius:6px;font-size:.88rem}
+.pane ul{padding-left:1.1rem;color:#374151}
+footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="nav"><div class="logo">CompDaily</div><span>Savings planner</span></header>
+  <div class="hero">
+    <h1>Make your money grow.</h1>
+    <p>See how your savings could compound over time. Adjust your balance, contributions and rate, and compare plans side by side.</p>
+  </div>
+
+  <div class="layout">
+    <aside class="panel" aria-label="Savings plan inputs">
+      <h2>Your savings plan</h2>
+      <p class="sub">Change any value to update the projection.</p>
+      <div id="aBox">
+        <label for="a-p">Starting balance ($)</label>
+        <input type="number" id="a-p" min="0" step="500" value="5000">
+        <label for="a-r">Annual interest rate <span class="rv" id="a-rv">6.00%</span></label>
+        <input type="range" id="a-r" min="0" max="20" step="0.25" value="6">
+        <label for="a-y">Time horizon <span class="rv" id="a-yv">10 years</span></label>
+        <input type="range" id="a-y" min="1" max="50" step="1" value="10">
+        <label for="a-c">Contribution each period ($)</label>
+        <input type="number" id="a-c" min="0" step="25" value="200">
+        <label for="a-f">Compounding frequency</label>
+        <select id="a-f"><option value="12">Monthly</option><option value="4">Quarterly</option><option value="1">Annually</option><option value="365">Daily</option></select>
+        <fieldset><legend>When is each contribution added?</legend>
+          <label class="radio"><input type="radio" name="a-t" value="end" checked> End of period</label>
+          <label class="radio"><input type="radio" name="a-t" value="start"> Start of period</label>
+        </fieldset>
+      </div>
+      <hr>
+      <label class="tog"><input type="checkbox" id="cmp"> Compare with another plan</label>
+      <div id="bBox">
+        <h3 style="font-size:.95rem;margin-top:1.1rem">Scenario B</h3>
+        <label for="b-p">Starting balance ($)</label>
+        <input type="number" id="b-p" min="0" step="500" value="5000">
+        <label for="b-r">Annual interest rate <span class="rv" id="b-rv">8.00%</span></label>
+        <input type="range" id="b-r" min="0" max="20" step="0.25" value="8">
+        <label for="b-y">Time horizon <span class="rv" id="b-yv">10 years</span></label>
+        <input type="range" id="b-y" min="1" max="50" step="1" value="10">
+        <label for="b-c">Contribution each period ($)</label>
+        <input type="number" id="b-c" min="0" step="25" value="150">
+        <label for="b-f">Compounding frequency</label>
+        <select id="b-f"><option value="12">Monthly</option><option value="4">Quarterly</option><option value="1">Annually</option><option value="365">Daily</option></select>
+        <fieldset><legend>Contribution timing</legend>
+          <label class="radio"><input type="radio" name="b-t" value="end" checked> End of period</label>
+          <label class="radio"><input type="radio" name="b-t" value="start"> Start of period</label>
+        </fieldset>
+      </div>
+    </aside>
+
+    <main>
+      <h2>Your projection</h2>
+      <div id="msg"></div>
+      <div class="metrics">
+        <div class="metric"><span>Projected balance</span><strong id="m1"></strong></div>
+        <div class="metric"><span>Money you put in</span><strong id="m2"></strong></div>
+        <div class="metric"><span>Estimated interest</span><strong id="m3"></strong></div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-pane="p1">Growth chart</button>
+        <button role="tab" aria-selected="false" data-pane="p2">Year-by-year details</button>
+        <button role="tab" aria-selected="false" data-pane="p3">How it works</button>
+      </div>
+
+      <section class="pane on" id="p1">
+        <div class="legend"><span><i style="background:var(--a)"></i>Your plan</span><span id="legB" hidden><i style="background:var(--b)"></i>Scenario B</span></div>
+        <div class="chart" id="chart"></div>
+        <p class="muted">Tip: move your pointer over the chart to inspect a balance at any point in time.</p>
+        <div class="note" id="diff" hidden></div>
+      </section>
+
+      <section class="pane" id="p2">
+        <div class="scroll"><table><thead><tr><th>Year</th><th>Contribution</th><th>Interest earned</th><th>Balance</th></tr></thead><tbody id="rows"></tbody></table></div>
+        <button class="btn" id="csv">Download full schedule (CSV)</button>
+        <p class="muted">The table shows annual checkpoints and the final period. Download the CSV for every compounding period.</p>
+      </section>
+
+      <section class="pane" id="p3">
+        <h3 style="font-size:1.05rem;margin-bottom:.6rem">What this calculator assumes</h3>
+        <ul>
+          <li>The annual nominal rate is divided by the selected number of compounding periods.</li>
+          <li>Your contribution is added once per compounding period (for example, monthly when monthly compounding is selected).</li>
+          <li>Contributions are added at the start or end of each period, based on your selection.</li>
+          <li>The rate stays constant for the entire projection.</li>
+        </ul>
+        <p><strong>Keep in mind:</strong> this is a mathematical projection, not a promise of investment returns. It does not account for taxes, fees, inflation, or changing interest rates.</p>
+        <p><code>B(t+1) = B(t) × (1 + r/m) + c</code></p>
+        <p class="muted">For end-of-period contributions, c is added after interest. For start-of-period contributions, c is added before interest.</p>
+      </section>
+    </main>
+  </div>
+  <footer class="muted">CompDaily Savings Planner · Educational tool · All amounts shown in dollars</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const money = x => '$' + x.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+function futureValue(p) {
+  const errs = [];
+  if (p.principal < 0) errs.push("Starting principal can’t be negative.");
+  if (p.years <= 0) errs.push("Number of years must be greater than 0.");
+  if (p.contribution < 0) errs.push("Contribution per period can’t be negative.");
+  if (errs.length) throw new Error(errs.join(' '));
+  const n = Math.round(p.years * p.m), r = p.rate / p.m;
+  let bal = p.principal, contrib = 0;
+  const sched = [];
+  for (let i = 1; i <= n; i++) {
+    if (p.timing === 'start') { bal += p.contribution; contrib += p.contribution; }
+    const interest = bal * r;
+    bal += interest;
+    if (p.timing === 'end') { bal += p.contribution; contrib += p.contribution; }
+    sched.push({period: i, contribution: p.contribution, interest, balance: bal});
+  }
+  return {fv: bal, contrib, interest: bal - p.principal - contrib, sched, m: p.m, principal: p.principal};
+}
+
+function read(k) {
+  return {
+    principal: parseFloat($(k + '-p').value) || 0,
+    rate: parseFloat($(k + '-r').value) / 100,
+    years: parseFloat($(k + '-y').value),
+    contribution: parseFloat($(k + '-c').value) || 0,
+    m: parseInt($(k + '-f').value, 10),
+    timing: document.querySelector(`input[name=${k}-t]:checked`).value
+  };
+}
+
+function niceStep(max, ticks) {
+  const raw = max / ticks, pow = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / pow;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * pow;
+}
+
+let series = [], geom = null;
+
+function drawChart() {
+  const W = 800, H = 420, L = 74, R = 20, T = 16, B = 42;
+  const maxY = Math.max(...series.map(s => s.years));
+  const maxV = Math.max(...series.flatMap(s => [s.res.fv, s.res.principal]), 1);
+  const step = niceStep(maxV * 1.05, 5);
+  const top = Math.ceil(maxV * 1.05 / step) * step;
+  const X = v => L + (v / maxY) * (W - L - R), Y = v => H - B - (v / top) * (H - T - B);
+  const css = getComputedStyle(document.documentElement);
+  let g = '';
+  for (let v = 0; v <= top + 1e-9; v += step)
+    g += `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${L - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="12" fill="var(--muted)">$${v.toLocaleString('en-US')}</text>`;
+  const xs = niceStep(maxY, 8);
+  for (let v = 0; v <= maxY + 1e-9; v += xs)
+    g += `<text x="${X(v)}" y="${H - 16}" text-anchor="middle" font-size="12" fill="var(--muted)">${+v.toFixed(2)}</text>`;
+  g += `<text x="${(L + W - R) / 2}" y="${H - 1}" text-anchor="middle" font-size="12" fill="var(--muted)">Years</text>`;
+  series.forEach((s, i) => {
+    const n = s.res.sched.length, skip = Math.max(1, Math.floor(n / 500));
+    let d = `M${X(0)} ${Y(s.res.principal)}`;
+    for (let k = skip; k <= n; k += skip) d += `L${X(k / s.res.m)} ${Y(s.res.sched[k - 1].balance)}`;
+    if (n % skip) d += `L${X(n / s.res.m)} ${Y(s.res.fv)}`;
+    if (i === 0) g += `<path d="${d}L${X(n / s.res.m)} ${Y(0)}L${X(0)} ${Y(0)}Z" fill="var(--a)" opacity=".09"/>`;
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="3" ${i ? 'stroke-dasharray="8 6"' : ''} stroke-linejoin="round"/>`;
+  });
+  g += `<line id="cur" y1="${T}" y2="${H - B}" stroke="var(--muted)" stroke-dasharray="3 3" visibility="hidden"/>`;
+  g += `<rect id="hit" x="${L}" y="${T}" width="${W - L - R}" height="${H - T - B}" fill="transparent"/>`;
+  $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Savings balance over time">${g}</svg><div class="tip" id="tip"></div>`;
+  geom = {W, H, L, R, maxY, X};
+  const svg = $('chart').querySelector('svg'), hit = $('hit'), cur = $('cur'), tip = $('tip');
+  hit.addEventListener('pointermove', e => {
+    const rect = svg.getBoundingClientRect(), sx = (e.clientX - rect.left) * (W / rect.width);
+    const yr = Math.min(maxY, Math.max(0, (sx - L) / (W - L - R) * maxY));
+    cur.setAttribute('x1', X(yr)); cur.setAttribute('x2', X(yr)); cur.setAttribute('visibility', 'visible');
+    tip.innerHTML = `<strong>Year ${yr.toFixed(1)}</strong>` + series.map((s, i) => {
+      const idx = Math.min(s.res.sched.length, Math.round(yr * s.res.m));
+      const v = idx === 0 ? s.res.principal : s.res.sched[idx - 1].balance;
+      return `<div><span style="color:${i ? '#a5b4fc' : '#fff'}">●</span> ${s.name}: ${money(v)}</div>`;
+    }).join('');
+    tip.style.display = 'block';
+    const px = (X(yr) / W) * rect.width;
+    tip.style.left = Math.min(px + 12, rect.width - tip.offsetWidth - 4) + 'px';
+    tip.style.top = '8px';
+  });
+  hit.addEventListener('pointerleave', () => { cur.setAttribute('visibility', 'hidden'); tip.style.display = 'none'; });
+}
+
+function render() {
+  $('a-rv').textContent = (parseFloat($('a-r').value)).toFixed(2) + '%';
+  $('a-yv').textContent = $('a-y').value + ' years';
+  $('b-rv').textContent = (parseFloat($('b-r').value)).toFixed(2) + '%';
+  $('b-yv').textContent = $('b-y').value + ' years';
+  const cmp = $('cmp').checked;
+  $('bBox').classList.toggle('on', cmp);
+  $('legB').hidden = !cmp;
+  const msg = $('msg'); msg.innerHTML = '';
+  let a, b;
+  try {
+    a = futureValue(read('a'));
+    if (cmp) b = futureValue(read('b'));
+  } catch (e) {
+    msg.innerHTML = `<div class="err">${e.message}</div>`;
+    return;
+  }
+  const ar = read('a');
+  $('m1').textContent = money(a.fv);
+  $('m2').textContent = money(a.principal + a.contrib);
+  $('m3').textContent = money(a.interest);
+  if (a.interest < 0) msg.innerHTML = '<div class="warn">At this assumed rate, the projection includes a negative interest effect.</div>';
+  else if (ar.rate === 0) msg.innerHTML = '<div class="warn">At 0%, your balance grows only through contributions.</div>';
+
+  series = [{name: 'Your plan', color: 'var(--a)', res: a, years: ar.years}];
+  if (cmp) series.push({name: 'Scenario B', color: 'var(--b)', res: b, years: read('b').years});
+  drawChart();
+
+  const diff = $('diff');
+  diff.hidden = !cmp;
+  if (cmp) {
+    const d = b.fv - a.fv;
+    const label = d > 0 ? 'Scenario B ends higher' : d < 0 ? 'Your plan ends higher' : 'Both plans end at the same balance';
+    diff.innerHTML = `<strong>${label}.</strong> Difference at the end: ${money(Math.abs(d))}.`;
+  }
+
+  const last = a.sched.length - 1;
+  $('rows').innerHTML = a.sched.map((r, i) => ({r, i}))
+    .filter(({r, i}) => r.period % a.m === 0 || i === last)
+    .map(({r}) => `<tr><td>${+(r.period / a.m).toFixed(4)}</td><td>${money(r.contribution)}</td><td>${money(r.interest)}</td><td>${money(r.balance)}</td></tr>`).join('');
+  window._a = a;
+}
+
+$('csv').addEventListener('click', () => {
+  const a = window._a; if (!a) return;
+  const lines = ['Year,Contribution,Interest earned,Balance'].concat(
+    a.sched.map(r => [r.period / a.m, r.contribution.toFixed(2), r.interest.toFixed(2), r.balance.toFixed(2)].join(',')));
+  const url = URL.createObjectURL(new Blob([lines.join('\n')], {type: 'text/csv'}));
+  const el = document.createElement('a'); el.href = url; el.download = 'savings_projection.csv'; el.click();
+  URL.revokeObjectURL(url);
+});
+
+document.querySelectorAll('.tabs button').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x === btn));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.id === btn.dataset.pane));
+}));
+document.querySelectorAll('input,select').forEach(el => el.addEventListener('input', render));
+render();
+</script>
+</body>
+</html>

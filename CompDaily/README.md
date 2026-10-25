@@ -1,4 +1,4 @@
-# Nestegg — Savings Growth Planner
+# CompDaily — Savings Growth Planner
 
 A browser-based interactive compound-interest calculator built with Streamlit and Plotly.
 
